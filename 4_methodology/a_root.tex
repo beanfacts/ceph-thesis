@@ -1,0 +1,378 @@
+% !TEX root = main.tex
+
+\pagebreak
+\section{Methodology}
+\label{sec:methodology}
+
+In this section, we detail the experimental methodology designed to evaluate the Ceph file system for \ac{HPC} environments. A specialized approach was necessary due to the unique requirements and constraints of \ac{HPC} environments. These include factors such as the lack of root privileges on standard \ac{HPC} compute nodes, dynamic allocation of compute resources, as well as our requirement to isolate hardware performance. Consequently, the primary goals of the methodology detailed in this section are as follows:
+
+\begin{itemize}
+    \item To engineer an automated deployment framework capable of rootless provisioning of Ceph clusters, integrating with standard \ac{HPC} cluster nodes, workload managers such as Slurm, and rootless \acs{HPC}-optimized container runtimes, such as Apptainer.
+    \item To eliminate bandwidth and latency limitations of physical hard disks from performance measurements through the use of Ceph's memory backed storage backend, allowing for our evaluation to focus on Ceph's internal abstraction layers.
+    \item To establish a tuned baseline for network communication performance over common \ac{HPC} fabrics---specifically, the Omni-Path and InfiniBand fabrics available on the \acs{GWDG} cluster---in order to potentially attribute possible performance bottlenecks which arise to Ceph's reliance on the \ac{TCP/IP} stack for its communication.
+    \item To construct a performance testing pipeline using \ac{HPC} \acs{I/O} performance benchmarking tools such as \ac{IOR} and mdtest, which test multiple \ac{I/O} access patterns common in \ac{HPC} at various scaling levels.
+    \item To establish a secondary Ceph cluster with tightly-controlled performance parameters, in order to evaluate the system administration and theoretical performance scaling aspects of the file system.
+\end{itemize}
+
+The subsections which follow describe our evaluation of existing cluster deployment tools, our custom Ceph deployment system, network tuning, and our benchmarking framework.
+
+\subsection{Deployment Tools}
+
+Ceph clusters can be deployed using a variety of standard tools. However,
+several challenges were presented when attempting to implement these in the
+\ac{HPC} test environments that were available for this thesis. We will
+initially cover existing tools for production deployments, followed by the
+deployment tool created for this thesis.
+
+\subsubsection{Cephadm}
+\label{sec:cephadm}
+
+Cephadm is a first-party orchestration tool designed for the deployment of Ceph clusters. It manages cluster deployment by performing setup operations such as storage provisioning and placement of daemons on participating cluster nodes. It is generally the recommended tool for the deployment of production-ready Ceph clusters\footnote{\url{https://docs.ceph.com/en/latest/install/}. Accessed 21.01.2026.}.
+
+The Cephadm orchestrator requires root permissions in order to perform operations such as storage configuration, as well as an interface to either Docker or Podman as a container runtime, used to create daemon containers. The hardware available for this thesis, standard \ac{HPC} cluster nodes, neither allowed for root access nor access to a fully-featured Podman or Docker installation. Instead, only the Apptainer container runtime was provided.
+
+In addition, modern Ceph versions use the BlueStore storage backend, which performs read/write operations directly on block devices (i.e., physical disks, partitions, or logical volumes) rather than using an intermediate file system. This requires both the hardware (i.e., the disks themselves to be available), as well as the permissions necessary to read and write to them. Both of these options were not available on the \ac{HPC} cluster. While the legacy FileStore backend could have theoretically been run rootless, we do not consider the data gathered from this backend to be useful for evaluation. This is primarily due to the fact that, since January 2025, the last Ceph version with support for the FileStore Backend (17, Quincy) is unsupported\footnote{\url{https://docs.ceph.com/en/latest/releases/\#active-releases}. Accessed 02.02.2026.}.
+
+The cephadm utility will still be used in this thesis to evaluate the
+system administration aspect of the file system. However, because the hardware available for this purpose consists of a single performance- and network-limited computer, large-scale stress testing will not be performed on the Cephadm-deployed cluster. This deployment is referred to as the
+\enquote{Production Deployment} and detailed further in~\cref{sec:production-deployment}.
+
+\subsubsection{Alternatives}
+
+Other orchestration tools, such as Rook, have similar requirements which complicate deployment on the \ac{HPC} cluster. Due to the aforementioned permission limitations and the desire to eliminate sources of variance outside of Ceph's direct control as much as possible, such as variations in \ac{SSD} performance, a custom deployment and benchmarking method was implemented in this thesis.
+
+\subsection{Custom Deployment}
+\label{sec:custom-deployment}
+
+Due to the unique limitations of the cluster, as well as the time-consuming and therefore impractical nature of deploying several different cluster configurations manually, a custom deployment tool was created in this thesis in order to deploy and benchmark Ceph clusters of various sizes as well as under various client workloads. The tool has been named \enquote{Cuttlefish} and will be referred to as such in the following sections.
+
+Cuttlefish is built for Ceph cluster deployment taking into account the limitations of the \ac{HPC} cluster. Specifically, it must function under the following constraints:
+
+\begin{itemize}
+    \item Elevated privileges are not required on any node in the cluster.
+    \item Daemons must run either without a container engine, or on Apptainer, the latter of which was available on the test nodes.
+    \item The number of daemons of each type as well as the distribution should be configurable.
+    \item The orchestrator should be capable of deploying daemons on dynamically allocated nodes, which have varying \ac{IP} addresses and may not be pre-configured.
+\end{itemize}
+
+Cuttlefish is built to work with Apptainer and Slurm. Slurm is used for the allocation of nodes from the \ac{HPC} cluster pool, and Apptainer is used to run the daemons in containers regardless of the host operating system. The latter is similar to the method used by Cephadm, although the container runtime is different.
+
+Due to the BlueStore backend's reliance on direct disk access, it is not possible to run large-scale BlueStore tests on the \ac{HPC} cluster without root permissions. However, Ceph provides a memory-backed storage backend. This backend, known as MemStore, is designed primarily for testing purposes, and does not require elevated privileges---objects are stored in \ac{RAM}. For the purposes of these benchmarks, this backend is sufficient, as the goal of our benchmarking process is to identify bottlenecks within Ceph itself, rather than the limitations of the underlying disks. Being an in-memory storage backend, MemStore is less likely to be a bottleneck due to the higher bandwidth and lower latency provided by \ac{RAM}. Given that the memory bandwidth is significantly higher than the network bandwidth, we assume that the network becomes a performance bottleneck before memory does. To validate this, prior to running benchmarks, the memory bandwidth of the system will be tested using the Intel Memory Latency Checker\footnote{\url{https://www.intel.com/content/www/us/en/download/736633/intel-memory-latency-checker-intel-mlc.html}. Accessed 26.02.2026.} (mlc), or pmbw\footnote{\url{https://panthema.net/2013/pmbw/}. Accessed 26.02.2026.} if mlc is not capable of running due to system constraints.
+
+A summary of the communication between the various involved systems is summarized in \Cref{fig:cuttlefish_deployment_seq_diagram} as a sequence diagram. Additionally, we will use an example cluster to demonstrate how the system state is modified by the various steps in the deployment process, shown in~\cref{tab:example-cluster-layout}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|ccccccc|}
+        \hline
+        Hostname & IP Address & \acs{RAM} & Monitors & Managers & \acp{MDS} & \acp{OSD} \\
+        \hline
+        node1    & 192.0.2.1 & \multirow{4}{*}{256 GiB} & 1        & 1        & 1         & ---       \\
+        node2    & 192.0.2.2 & & ---      & ---      & ---       & 3         \\
+        node3    & 192.0.2.3 & & ---      & ---      & ---       & 4         \\
+        node4    & 192.0.2.4 & & ---      & ---      & ---       & 3         \\
+        \hline
+    \end{tabular}
+    \caption[Example Cluster Layout]{An example cluster layout which will be used for demonstration purposes.}
+    \label{tab:example-cluster-layout}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{assets/cuttlefish/deployment_seq_diagram.pdf}
+    \caption[Cluster deployment sequence diagram]{
+Sequence diagram for the cluster deployment process. The deployment scripts
+(manifest generator and deployment handler) communicate with external services
+in order to generate a manifest containing all necessary details to start the
+cluster. With the complete manifest, the deployment handler communicates with
+participating nodes and their container runtimes to bring up the requested
+daemons.
+}
+    \label{fig:cuttlefish_deployment_seq_diagram}
+\end{figure}
+
+\subsubsection{One-Time Operations}
+
+Certain operations within the deployment must only be performed once and can be reused across an unlimited number of cluster deployment and teardown cycles.
+
+Ceph daemons and clients communicate with each other using an encrypted protocol known as cephx\footnote{\url{https://docs.ceph.com/en/tentacle/dev/cephx/}. Accessed 20.01.2026.}. Monitor nodes contain the keys of all nodes, including their own key shared across the monitors, while individual daemon types only have their own keys. The keyring then contains the keys as well as the allowed permissions: an example of a keyring file can be found in~\cref{appendix:sample-ceph-keyring}.
+
+Access to a Ceph cluster is not required for this step, only the command line tools which are available in the upstream Ceph container image. Cuttlefish includes a tool which generates this keyring file once, with configurable permissions. This keyring file is then used and preserved across different deployments and reconfigurations. For example, the keyring can contain keys for 512 \acp{OSD} and 10 monitors, even if the deployed cluster never contains this many daemons. The rest of the keys in the keyring are simply ignored until more daemons are created.
+
+\subsubsection{Node Allocation \& Placement}
+\label{sec:node-allocation-placement}
+
+The nodes available for testing during this thesis were part of the regular production compute cluster at the \ac{GWDG}. Nodes are allocated on-demand, and change depending on node availability. Therefore, a request to allocate e.g., 16 nodes on a cluster may return a different set of nodes depending on the nodes used by other users' jobs. A job was first allocated using the \texttt{salloc} command, which creates a node allocation for the cluster deployment system to use. \Cref{lst:slurmalloc} shows a typical distribution of nodes after an allocation is granted, gathered using \texttt{squeue}\footnote{Output from \texttt{squeue -{}-me} formatted to remove unnecessary/internal information.}.
+
+\lstinputlisting[
+    caption={
+        [Slurm Node Allocation]
+        A typical Slurm node allocation performed on the \ac{GWDG} compute cluster's 
+        \texttt{medium96s} partition, containing a set of nodes ready for use.
+    },
+    label={lst:slurmalloc},
+    frame=single,
+    breaklines=true
+]{assets/cluster/squeue-me.txt}
+
+Due to the dynamic nature of the allocations, we automate the mapping of Ceph daemons onto nodes. The user may specify the desired state of the cluster at a high level, and the placement will be performed according to the user's instructions. The placement algorithm allows for the following requirements and constraints to be taken into consideration:
+
+\begin{itemize}
+    \item Total number and type of daemons (e.g., 1 monitor, 1 \ac{MDS}, 8 \acp{OSD})
+    \item Number of nodes to use from the Slurm allocation
+    \item Adjustment of constraints per daemon type
+    \begin{itemize}
+        \item Density: the maximum number of daemons of this type to place on a node
+        \item Allowed overlaps: if no free nodes are available, allow placement on an already occupied node
+        \item Disallowed overlaps: do not allow the co-location of this daemon on a node with specific daemon types (e.g., monitor and \ac{OSD} must not overlap)
+        \item Required overlaps: require that the daemon be placed with another daemon of the specified type
+    \end{itemize}
+    \item Placement type
+    \begin{itemize}
+        \item Spread (S): Place daemons on the least loaded nodes
+        \item Group (G): Group daemons on the most loaded node up to the density limit before considering other nodes
+    \end{itemize}
+\end{itemize}
+
+The default placement policy is shown in~\cref{tbl:allowed-daemon-overlaps}.
+
+\newcommand{\YesMark}{%
+  \tikz\fill (0,0) rectangle (1.2ex,1.2ex);%
+}
+\newcommand{\NoMark}{%
+  \tikz\draw (0,0) rectangle (1.2ex,1.2ex);%
+}
+\newcommand{\RequiredMark}{%
+  \tikz\fill
+    (0,0) --
+    (1.2ex,0) --
+    (0.6ex,1.2ex) --
+    cycle;%
+}
+
+\begin{table}[h]
+    \begin{center}
+        \begin{tabular}{|cc|lcccc|}
+            \hline
+            \rotatebox{90}{Placement~} & \rotatebox{90}{Density~} & & \rotatebox{90}{Monitor~} & \rotatebox{90}{Manager~} & \rotatebox{90}{\acs{MDS}~} & \rotatebox{90}{\acs{OSD}~} \\
+            \hline
+            Spread & 1 & Monitor & \NoMark  & \YesMark & \YesMark & \NoMark \\
+            Spread & 1 & Manager & \RequiredMark & \NoMark  & \YesMark & \NoMark  \\
+            Spread & 128 & \acs{MDS} & \YesMark & \YesMark & \YesMark & \NoMark \\
+            Spread & 128 & \acs{OSD} & \NoMark  & \NoMark  & \NoMark  & \YesMark \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \begin{center}
+        \begin{tabular}{ccccccc}
+             Overlaps: & \NoMark & Disallowed & \YesMark & Allowed & \RequiredMark & Required \\
+        \end{tabular}
+    \end{center}
+    \caption[Default Placement Policy]{The default daemon placement policy. The daemon types on the left represent the daemon to be placed, and the daemon types in the table header represent the existing daemons on the node.}
+    \label{tbl:allowed-daemon-overlaps}
+\end{table}
+
+\subsubsection{Ceph Autoconfiguration}
+\label{sec:ceph-autoconfig}
+
+The template Ceph configuration is similar to that of a regular Ceph cluster: it contains the startup configuration shared across all nodes. However, in addition to the template itself, additional fields are added to the final configuration in order to allow for the cluster layout to change while keeping the template configuration static. \Cref{lst:ceph-conf} shows an example of a minimal ceph.conf which contains a configuration for a Ceph cluster with MemStore \acp{OSD}.
+
+\lstinputlisting[
+    language=ini,
+    caption={
+    [Minimal Ceph Configuration]
+    Minimal configuration file used for bootstrapping the Ceph cluster, allowing for
+    options to be changed by the user manually prior to the bring-up of the cluster.
+    For instance, the default minimum pool size is reduced to 1 for testing purposes.
+    },
+    label={lst:ceph-conf},
+    frame=single,
+    breaklines=true
+]{assets/cuttlefish/example.ceph.conf}
+
+Ceph daemons require the location of monitor nodes to be defined in the configuration. Instead of being hardcoded into the configuration, the monitor node list is generated dynamically based on the node allocation and placement policy as described in~\cref{sec:node-allocation-placement}. Once daemons have been allocated to nodes, the \ac{IP} addresses of the nodes containing monitor daemons are gathered and used to populate the monitor configuration.
+
+The amount of memory allocated to each \ac{OSD} is also selected based on the maximum number of \acp{OSD} per node within the cluster as well as the available memory. The memory limit is manually set: for benchmarking purposes, we have targeted 75\% of the available memory on the node. The remaining 25\% is reserved for the operating system, background tasks, and Ceph daemon process overhead. Each \ac{OSD} process requires additional memory beyond its MemStore allocation to operate, as do other services, such as monitors and \ac{MDS} daemons, and we observed that the maximum memory usage of the daemons was well within the remaining 25\% on our 256\,GiB and 512\,GiB nodes.
+
+For our example cluster (see~\cref{tab:example-cluster-layout}), this results in \texttt{node1} being added to the monitor configuration and a memory target based on the most loaded node with 4 \acp{OSD} and a memory target of 192 GiB across 4 \acp{OSD} for 48 GiB per \ac{OSD}, or 51,539,607,552 bytes when converted. These lines are created as shown in~\cref{lst:ceph-conf-dynamic}, and appended to the base Ceph configuration from~\cref{lst:ceph-conf}. Note that~\cref{lst:ceph-conf-dynamic} only shows the added values, not the entire configuration.
+
+\lstinputlisting[
+    language=ini,
+    caption={
+    [Dynamically Generated Ceph Configuration Items]
+    Dynamically generated Ceph configuration items, created based on the 
+    available cluster resources and user-specified targets.
+    },
+    label={lst:ceph-conf-dynamic},
+    frame=single,
+    breaklines=true
+]{assets/cuttlefish/dynamic.ceph.conf}
+
+\subsubsection{Container Image}
+
+The image to use for deployment can be specified in the configuration. For instance, it is possible to use the default upstream Ceph image or a custom-built image. For the benchmarks, the official Ceph Tentacle release (v20.2.0) image is used\footnote{The official image is available at \url{https://quay.io/repository/ceph/ceph}. Accessed 04.01.2026.}.
+
+Due to the fact that the \ac{HPC} cluster only provides Apptainer as a container runtime, the images are converted from the original \ac{OCI} format used by Docker and Podman into the Apptainer image format, known as \ac{SIF}\footnote{Apptainer was formerly known as Singularity, hence the name.}.  This functionality is performed natively by Apptainer by prepending \texttt{docker://} to the image name, enabling its compatibility mode.
+
+\subsubsection{Initial Configuration}
+
+\lstinputlisting[
+    language=ini,
+    caption={
+    [Generated Cluster Manifest]{
+        A manifest produced by the manifest generator for the example
+        cluster~(cf.~\cref{tab:example-cluster-layout}), containing 
+        monitors, \acp{OSD}, and \acp{MDS}.}
+    },
+    label={lst:cuttlefish-manifest},
+    frame=single,
+    breaklines=true,
+    float
+]{assets/cuttlefish/example.manifest.json}
+
+The manifest generator combines all of the required information from user configurations and external systems in order to build a complete cluster manifest. This manifest contains all of the information necessary to build a Ceph cluster, taking into consideration the required resources and available nodes. In addition, the Ceph configuration is also modified to add configuration details which change when the cluster changes---namely, the list of monitor nodes, which is allocated dynamically by the deployment script. For the cluster layout in~\cref{tab:example-cluster-layout}, the manifest would be generated as shown in~\cref{lst:cuttlefish-manifest}. This ensures that all daemons which are deployed using the manifest can communicate correctly without additional manual configuration steps.
+
+\subsubsection{Preparation of Cluster Nodes}
+
+In order to prepare the cluster nodes for running Ceph daemons, the dynamically allocated compute nodes must be brought to a state such that they are ready to run the orchestration stack and Ceph containers. Because we use node-local storage for our deployment, the \ac{HPC} cluster nodes are not pre-configured with the required folder structure and software dependencies.
+
+The initial step of the preparation involves retrieving the node list from Slurm. The system queries Slurm, searching for a user-specified job name (by default cuttlefish). Once this job is found, the list of candidates for placement is gathered. The hostnames are initially gathered through Slurm, while additional details, such as the list of interfaces and network addresses, are gathered via \ac{SSH}. On the \ac{GWDG} cluster, the hostname provided by Slurm can be used with \ac{SSH} in order to connect to the cluster nodes with passwordless host-based authentication, as long as the job is running and the job's user matches the current user.
+
+Next, the orchestrator connects to all cluster nodes via \ac{SSH}, in order to bootstrap a new Python virtual environment on local storage. The package sources themselves are stored on shared cluster storage. However, for performance reasons, the dependencies and the Cuttlefish orchestration package itself is installed on local storage, primarily in order to improve startup times. It also allows for nodes with potentially different processor configurations to be supported, although we only use nodes with identical hardware configurations in this thesis.
+
+Once all nodes complete this setup phase, the cluster is ready for the deployment phase.
+
+\subsubsection{Deployment}
+
+Once all of the previously discussed prerequisites are fulfilled, the deployment of the cluster can be performed. The deployment controller script establishes \ac{SSH} connections to nodes which are part of the cluster, executing the deployment worker script on the nodes in order to bring the cluster to the user's desired state.
+
+The deployment worker compares its current state to that of the manifest and starts Apptainer instances as necessary. Apptainer instances are the closest equivalent to standard containers in Docker or Podman; instances are designed for long-running applications and services. The following steps are performed to bring up Ceph daemons:
+
+\begin{itemize}
+    \item The basic file structure is generated in a temporary directory, with the layout shown in~\cref{fig:daemon-file-folder-layout}.
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=\linewidth]{assets/cuttlefish/file_folder_layout.pdf}
+        \caption[Daemon File/Folder Layout]{File and folder layout of a daemon deployed using Cuttlefish. The \texttt{ceph.conf} file is shared across all daemons, while the keyring is generated per-daemon from the full keyring stored in the manifest. The data folder contains data generated and/or required by Ceph for that specific daemon. Monitors write to the \texttt{ceph.log} and \texttt{ceph.audit.log} files.}
+        \label{fig:daemon-file-folder-layout}
+    \end{figure}
+    
+    \item The configuration is extracted from the manifest and written to \texttt{config/ceph.conf}, used by all nodes.
+    \item The keyring is extracted from the manifest, and only the key for the daemon is placed in the daemon's folder, e.g., \texttt{osd.0/keyring}. For monitors, the entire keyring with the pre-generated keys for all daemons is provided, even if only a subset of daemons defined in the keyring are deployed.
+    \item Monitors and \acp{OSD} are initialized if their data directories are empty with the \texttt{-{}-mkfs} commands for each daemon.
+    \item Daemons are started in the order of: monitors, managers, \acp{OSD}, \acp{MDS}, followed by other daemons (if any) as Apptainer instances with the appropriate folders mounted.
+\end{itemize}
+
+After these steps are completed, each node will run its assigned daemons within independent Apptainer instances. An example is shown in \Cref{lst:apptainer_instance_list}, shortened for brevity.
+
+\lstinputlisting[
+    caption={Apptainer Instance Listing for Running Cluster},
+    label={lst:apptainer_instance_list},
+    frame=single,
+    breaklines=true
+]{assets/cuttlefish/apptainer_instance_list.txt}
+
+To confirm that all instances are running, the layout of running instances can be requested from the deployment script, as shown in \Cref{lst:daemon_get_state}. This must be performed from a machine with \ac{SSH} access to and login permissions for the member nodes.
+
+\lstinputlisting[
+    caption={Listing of Running Daemons},
+    label={lst:daemon_get_state},
+    frame=single,
+    breaklines=true
+]{assets/cuttlefish/daemon_get_state.txt}
+
+\subsubsection{Teardown}
+
+Teardown follows the same process as deployment, using the deployment controller
+script with the command shown in~\cref{lst:daemon-teardown}.
+
+\lstinputlisting[
+    caption={[Cluster Teardown]{Command used to tear down a Ceph cluster. This command stops all Ceph daemon containers as defined in the manifest, followed by the deletion of the folder structure generated in~\cref{fig:daemon-file-folder-layout}.}},
+    label={lst:daemon-teardown},
+    frame=single,
+    breaklines=true
+]{assets/cuttlefish/teardown.txt}
+
+Note that this command does not cancel the Slurm job. The cluster can be re-deployed immediately: either with the same manifest, or with a manifest generated using different parameters, e.g., more \acp{OSD} or a different distribution of daemons on the cluster nodes within the allocated Slurm job.
+
+
+\subsection{Production Deployment}
+\label{sec:production-deployment}
+
+In addition to Ceph performance testing, we intend to evaluate Ceph from a systems administration perspective. In order to do so, it is necessary to test Ceph's production-ready components, such as cephadm and BlueStore, to evaluate the following functionality:
+
+\begin{itemize}
+    \item Ease of deployment from scratch
+    \item Processes involved in adding and removing storage from the cluster
+    \item Enablement of various Ceph services
+    \item Performance characteristics
+\end{itemize}
+
+Note that, unlike~\cref{sec:custom-deployment}, the performance characteristics being referred to in this section are not intended to test Ceph's performance limits, as the hardware available for this rootful production deployment is significantly more performance-limited than that available for the custom deployment. Instead, the intent is to evaluate how Ceph interacts with hardware under well-known, controlled lab conditions. To that end, we will control factors such as \ac{OSD} layout and disk \ac{I/O} performance in order to compare Ceph's theoretical behaviour with observed behaviour.
+
+\subsubsection{Deployment Hardware}
+
+The deployment consists of a test cluster with 8 nodes, which are configured as
+virtual machines on a single host, shown in~\cref{tab:dev-cluster}.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|ll|}
+        % \multicolumn{2}{Host Hardware} \\
+        \hline
+        \multicolumn{2}{|l|}{\textbf{Host Details}} \\
+        \hline
+        Host \ac{OS}        & Cent\acs{OS} Stream 9 \\
+        \ac{CPU}            & Intel Xeon E5-1650 v3 (6 cores, 12 threads) \\
+        \ac{RAM}            & 256 GiB \\
+        Disk                & 2x 480 GB \acs{RAID} 0 \ac{SSD} \\
+        Ceph vDisk Storage  & 128 GiB \texttt{tmpfs} \\
+        \hline
+        % \multicolumn{2}{Guest Hardware}
+        \multicolumn{2}{|l|}{\textbf{Guest Details}} \\
+        \hline
+        Hypervisor          & Linux KVM via libvirt \\
+        Hostnames           & cvm[1-8] \\
+        \acs{IP} Addresses  & 10.1.1.[1-8] \\
+        v\acs{CPU}s         & 4 (2 cores, 4 threads) \\
+        \acs{RAM}           & 16 GiB \\
+        Boot Disk           & 100 GiB Virt\acs{IO} Block \\
+        Ceph vDisk          & 16 GiB Virt\acs{IO} Block on \acs{RAM}-backed tmpfs \\
+        Guest \acs{OS}      & Cent\acs{OS} Stream 9 \\
+        Networking          & Virt\acs{IO} \\
+        \hline
+    \end{tabular}
+    \caption[Development Cluster Hardware]{The development cluster used for system evaluation and lab-controlled performance testing.}
+    \label{tab:dev-cluster}
+\end{table}
+
+\subsubsection{Performance Throttling}
+
+We will primarily be evaluating how well Ceph performs with a known upper limit to disk performance. Libvirt supports setting \ac{I/O} limits per disk based on user-specified \ac{IOPS} or bandwidth targets, as well as other, more granular options as shown in~\cref{lst:blkdeviotune}.
+
+\lstinputlisting[
+    caption={
+        [VirtIO Block Device Throttling]
+        Available options for the \texttt{virsh blkdeviotune} command for throttling disk performance.
+    },
+    label={lst:blkdeviotune},
+    frame=single,
+    breaklines=true
+]{assets/virt/blkdeviotune.txt}
+
+The throttling can be validated in the virtual machines by running a tool such
+as hdparm or \ac{FIO}, as shown in~\cref{lst:hdparm-fio-throttling}.
+
+\lstinputlisting[
+    caption={
+        [Throttling Validation with fio/hdparm]
+        Validation of a read limit of 50 MiB/s ($\approx$52.43 MB/s), performed with fio and hdparm. Only the summary is shown in the fio output for clarity.
+    },
+    label={lst:hdparm-fio-throttling},
+    frame=single,
+    breaklines=true
+]{assets/virt/fio-check-speed.txt}
+
+\input{4_methodology/b_tuning}
+\input{4_methodology/c_benchmarking}

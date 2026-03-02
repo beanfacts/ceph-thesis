@@ -1,0 +1,27 @@
+[25742.793289] general protection fault, probably for non-canonical address 
+               0x40030020dbae7000: 0000 [#1] SMP NOPTI
+[25742.805215] CPU: 178 PID: 1260 Comm: ksoftirqd/178 
+               Tainted: P           
+               OE     -------- -  - 4.18.0-553.54.1.el8_10.x86_64 #1
+...
+[25742.818286] RIP: 0010:hfi1_ipoib_send_dma_common+0x147/0xba0 [hfi1]
+...
+[25742.954536] Call Trace:
+[25742.957529]  ? __die_body+0x1a/0x60
+[25742.961704]  ? die_addr+0x38/0x51
+[25742.965681]  ? do_general_protection+0x135/0x280
+[25742.971123]  ? general_protection+0x1e/0x30
+[25742.976074]  ? hfi1_ipoib_send_dma_common+0x147/0xba0 [hfi1]
+[25742.982719]  ? hfi1_ipoib_send_dma_common+0x698/0xba0 [hfi1]
+[25742.989354]  hfi1_ipoib_send+0x18b/0x540 [hfi1]
+[25742.994711]  ipoib_start_xmit+0x339/0x650 [ib_ipoib]
+[25743.000533]  dev_hard_start_xmit+0xd7/0x240
+...
+[25743.065025]  tcp_rcv_established+0x20c/0x5f0
+[25743.070034]  tcp_v4_do_rcv+0x137/0x200
+[25743.074451]  tcp_v4_rcv+0xcf6/0xd90
+[25743.078576]  ip_protocol_deliver_rcu+0x2c/0x1d0
+[25743.083874]  ip_local_deliver_finish+0x4d/0x60
+[25743.089073]  ip_local_deliver+0xe4/0xf0
+...
+[25743.481071] Kernel panic - not syncing: Fatal exception in interrupt

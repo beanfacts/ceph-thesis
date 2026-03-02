@@ -1,0 +1,11 @@
+RANK  STATE   MDS     ACTIVITY     DNS    INOS   DIRS   CAPS  
+ 0    active   x2  Reqs:  288 /s  3196    703    158   1290   
+ 1    active   x0  Reqs:  500 /s  3981    850    321   1437   
+ 2    active   x3  Reqs:  280 /s  3870    694    180    996   
+ 3    active   x1  Reqs: 6901 /s  4833   2758    143   1510 
+
+RANK  STATE   MDS     ACTIVITY     DNS    INOS   DIRS   CAPS  
+ 0    active   x2  Reqs: 9023 /s  8165   6185   4136   11.6k  
+ 1    active   x0  Reqs:   37 /s  3844    260    259    128   
+ 2    active   x3  Reqs:    0 /s   578     54     51      1   
+ 3    active   x1  Reqs:   39 /s  2087    147    146    128   

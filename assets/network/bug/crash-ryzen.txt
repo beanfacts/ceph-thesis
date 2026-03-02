@@ -1,0 +1,21 @@
+[  121.786275] general protection fault, probably for non-canonical address 0x400300047866b3c0: 0000 [#1] SMP NOPTI
+[  121.786302] CPU: 12 PID: 0 Comm: swapper/12 Kdump: loaded Not tainted 4.18.0-553.89.1.el8_10.x86_64 #1
+[  121.786319] Hardware name: GIGABYTE MC12-LE0-00/MC12-LE0-00, BIOS F20 03/14/2025
+...
+[  121.786501]  ? __die_body+0x1a/0x60
+[  121.786511]  ? die_addr+0x38/0x51
+[  121.786519]  ? do_general_protection+0x135/0x280
+[  121.786530]  ? general_protection+0x1e/0x30
+[  121.786541]  ? _raw_spin_lock+0xc/0x30
+[  121.786551]  verbs_sdma_complete+0x2e/0x90 [hfi1]
+[  121.786580]  ? query_port+0x120/0x120 [hfi1]
+[  121.786601]  sdma_make_progress+0x14e/0x400 [hfi1]
+[  121.786626]  sdma_engine_interrupt+0x71/0xf0 [hfi1]
+[  121.786648]  sdma_interrupt+0x37/0xa0 [hfi1]
+[  121.786669]  __handle_irq_event_percpu+0x40/0x190
+[  121.786681]  handle_irq_event_percpu+0x30/0x80
+[  121.786692]  handle_irq_event+0x36/0x57
+[  121.786701]  handle_edge_irq+0x82/0x190
+[  121.786710]  handle_irq+0x1c/0x30
+[  121.786719]  do_IRQ+0x49/0xd0
+[  121.786728]  common_interrupt+0xf/0xf

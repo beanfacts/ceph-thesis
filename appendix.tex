@@ -1,0 +1,56 @@
+\section{Additional Materials}
+
+\subsection{Project Repositories}
+\label{appendix:project-repositories}
+
+The software packages produced for this thesis are available in the following repositories:
+
+\begin{itemize}
+    \item \textbf{Cuttlefish} for setup of Ceph clusters\\ \url{https://github.com/beanfacts/cuttlefish}
+    \item \textbf{Scalie} for automated benchmarking of file system scaling performance with \acs{IOR} and mdtest\\ \url{https://github.com/beanfacts/scalie}
+    \item \textbf{Ceph-Thesis} for the LaTeX source of this thesis, as well as supporting materials\\ \url{https://github.com/beanfacts/ceph-thesis}
+\end{itemize}
+
+\subsection{In-Memory tmpfs}
+\label{appendix:tmpfs-in-memory}
+
+In~\cref{sec:opa-bad-root-cause-analysis}, it was mentioned that tmpfs is an in-memory file system. This is true on the \ac{HPC} cluster nodes because the nodes are not configured with any swap space. However, tmpfs data may sometimes be swapped to disk if available. From the Linux manual page for tmpfs\footnote{\url{https://man7.org/linux/man-pages/man5/tmpfs.5.html}. Accessed 07.01.2026. This manual page can also be reproduced on most Linux systems by typing \texttt{man tmpfs} in the terminal.}, it is mentioned that \enquote{The filesystem can employ swap space when physical memory pressure demands it.}.
+
+\subsection{Unprivileged Kernel Log Viewing}
+\label{appendix:dmesg-unprivileged}
+
+Whether \texttt{dmesg} is a privileged command depends on the \texttt{kernel.dmesg\_restrict} sysctl value. On certain Linux distributions and on the \ac{GWDG} \ac{HPC} cluster, this is set to 0 (unrestricted). As such, no privileges are required to run \texttt{dmesg} itself; however, configuration of the location of crash dumps remains restricted, necessitating the approach taken in~\cref{sec:opa-bad-root-cause-analysis}.
+
+\pagebreak
+\subsection{\acs{IOR}/mdtest Container Dockerfile}
+\label{appendix:ior-mdtest-dockerfile}
+
+\Cref{lst:ior-dockerfile} shows the Dockerfile used to build the container for running the \acs{IOR} and \texttt{mdtest} benchmarks. The container is based on the Ceph base image, which is currently based on CentOS Stream 9, and the required dependencies are installed and utilized to build the \acs{IOR} and \texttt{mdtest} binaries with support for \ac{RADOS} and \ac{CephFS}.
+
+\lstinputlisting[
+    caption={
+        [Dockerfile for \acs{IOR}/mdtest Container]
+        Dockerfile used to build the container for running the \acs{IOR} and \texttt{mdtest} benchmarks.
+    },
+    label={lst:ior-dockerfile},
+    frame=single,
+    breaklines=true
+]{assets/cuttlefish/Dockerfile.ior}
+
+\pagebreak
+\subsection{Sample Ceph Keyring}
+\label{appendix:sample-ceph-keyring}
+
+\lstinputlisting[
+    language=ini,
+    caption={
+        [Ceph Keyring File]
+        A generated Ceph keyring file containing keys which are distributed 
+        among deployed daemons in the cluster. Enough keys are generated in order
+        to allow for the scaling up of the cluster without the need to regenerate 
+        the keyring.
+    },
+    label={lst:cephkeyring},
+    frame=single,
+    breaklines=true
+]{assets/cuttlefish/example.ceph.keyring}

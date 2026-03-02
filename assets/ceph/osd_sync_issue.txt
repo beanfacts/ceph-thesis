@@ -1,0 +1,25 @@
+[root@cvm1 ~]# ceph orch device ls
+HOST  PATH      TYPE  DEVICE ID   SIZE  AVAILABLE  REFRESHED  REJECT REASONS
+cvm1  /dev/vdb  hdd              16.0G  Yes        6m ago
+...
+cvm8  /dev/vdb  hdd              16.0G  Yes        82s ago
+
+[root@cvm1 ~]# ceph status
+  cluster:
+    id:     d3181938-1439-11f1-ab3e-525400ceff01
+    ...
+    osd: 8 osds: 0 up, 8 in (since 12s)
+
+  data:
+    pools:   0 pools, 0 pgs
+    objects: 0 objects, 0 B
+    usage:   0 B used, 0 B / 0 B avail
+    pgs:
+
+[root@cvm1 ~]# ceph osd df
+ID  CLASS  WEIGHT   REWEIGHT  SIZE  RAW USE  DATA  OMAP  META  AVAIL  %USE  VAR   PGS  STATUS
+ 0    hdd  0.01559   1.00000   0 B      0 B   0 B   0 B   0 B    0 B     0  1.00    0    down
+...
+ 7    hdd  0.01559   1.00000   0 B      0 B   0 B   0 B   0 B    0 B     0  1.00    0    down
+                       TOTAL   0 B      0 B   0 B   0 B   0 B    0 B     0
+MIN/MAX VAR: 1.00/1.00  STDDEV: 0

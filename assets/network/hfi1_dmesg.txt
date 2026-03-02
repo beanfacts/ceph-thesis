@@ -1,0 +1,3 @@
+hfi1 0000:84:00.0: hfi1_0: Reducing # user receive contexts to: 155, from 160
+hfi1 0000:84:00.0: hfi1_0: No receive contexts available for netdevs.
+hfi1 0000:84:00.0: hfi1_0: rcv contexts: chip 160, used 160 (kernel 5, netdev 0, user 155)

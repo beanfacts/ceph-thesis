@@ -1,0 +1,431 @@
+@misc{io500,
+  author  = {{IO500 Foundation}},
+  title   = {IO500},
+  url     = {https://io500.org},
+  urldate = {2026-03-02}
+}
+
+@misc{ior,
+  author  = {{IOR authors and contributors}},
+  title   = {IOR and mdtest},
+  url     = {https://github.com/hpc/ior},
+  urldate = {2026-03-02}
+}
+
+@misc{cephfs-file-layouts,
+  author       = {Ceph authors and Contributors},
+  howpublished = {\url{https://docs.ceph.com/en/reef/cephfs/file-layouts/}},
+  urldate      = {2026-03-02}
+}
+
+@misc{ceph-use-cases,
+  author       = {Ceph authors and contributors},
+  title        = {Ceph.io - Use Cases},
+  howpublished = {\url{https://ceph.io/en/discover/use-cases/}},
+  urldate      = {2026-03-02}
+}
+
+@misc{openmpi-intro,
+  author       = {The Open MPI Community},
+  howpublished = {\url{https://docs.open-mpi.org/en/v5.0.x/}},
+  urldate      = {2026-03-02}
+}
+
+@inproceedings{crush-paper,
+  author    = {Weil, Sage A. and Brandt, Scott A. and Miller, Ethan L. and Maltzahn, Carlos},
+  title     = {CRUSH: controlled, scalable, decentralized placement of replicated data},
+  year      = {2006},
+  isbn      = {0769527000},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/1188455.1188582},
+  doi       = {10.1145/1188455.1188582},
+  abstract  = {Emerging large-scale distributed storage systems are faced with the task of distributing petabytes of data among tens or hundreds of thousands of storage devices. Such systems must evenly distribute data and workload to efficiently utilize available resources and maximize system performance, while facilitating system growth and managing hardware failures. We have developed CRUSH, a scalable pseudorandom data distribution function designed for distributed object-based storage systems that efficiently maps data objects to storage devices without relying on a central directory. Because large systems are inherently dynamic, CRUSH is designed to facilitate the addition and removal of storage while minimizing unnecessary data movement. The algorithm accommodates a wide variety of data replication and reliability mechanisms and distributes data in terms of user-defined policies that enforce separation of replicas across failure domains.},
+  booktitle = {Proceedings of the 2006 ACM/IEEE Conference on Supercomputing},
+  pages     = {122–es},
+  location  = {Tampa, Florida},
+  series    = {SC '06},
+  urldate   = {2026-03-02}
+}
+
+@inproceedings{rados-paper,
+  author    = {Weil, Sage A. and Leung, Andrew W. and Brandt, Scott A. and Maltzahn, Carlos},
+  title     = {RADOS: a scalable, reliable storage service for petabyte-scale storage clusters},
+  year      = {2007},
+  isbn      = {9781595938992},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/1374596.1374606},
+  doi       = {10.1145/1374596.1374606},
+  abstract  = {Brick and object-based storage architectures have emerged as a means of improving the scalability of storage clusters. However, existing systems continue to treat storage nodes as passive devices, despite their ability to exhibit significant intelligence and autonomy. We present the design and implementation of RADOS, a reliable object storage service that can scales to many thousands of devices by leveraging the intelligence present in individual storage nodes. RADOS preserves consistent data access and strong safety semantics while allowing nodes to act semi-autonomously to self-manage replication, failure detection, and failure recovery through the use of a small cluster map. Our implementation offers excellent performance, reliability, and scalability while providing clients with the illusion of a single logical object store.},
+  booktitle = {Proceedings of the 2nd International Workshop on Petascale Data Storage: Held in Conjunction with Supercomputing '07},
+  pages     = {35–44},
+  numpages  = {10},
+  keywords  = {petabyte-scale storage, object-based storage, clustered storage},
+  location  = {Reno, Nevada},
+  series    = {PDSW '07},
+  urldate   = {2026-03-02}
+}
+
+@article{reed-solomon-original-paper,
+  issn      = {03684245},
+  url       = {http://www.jstor.org/stable/2098968},
+  author    = {I. S. Reed and G. Solomon},
+  journal   = {Journal of the Society for Industrial and Applied Mathematics},
+  number    = {2},
+  pages     = {300--304},
+  publisher = {Society for Industrial and Applied Mathematics},
+  title     = {Polynomial Codes Over Certain Finite Fields},
+  volume    = {8},
+  year      = {1960},
+  urldate   = {2026-03-02}
+}
+
+
+@misc{ceph_erasure_code,
+  title   = {Erasure Code developer notes - Ceph Documentation},
+  author  = {{Ceph authors and contributors}},
+  url     = {https://docs.ceph.com/en/reef/dev/osd_internals/erasure_coding/developer_notes/},
+  urldate = {2026-03-02}
+}
+
+
+@article{lewis_io_2025,
+  title      = {I/{O} in {Machine} {Learning} {Applications} on {HPC} {Systems}: {A} 360-degree {Survey}},
+  volume     = {57},
+  issn       = {0360-0300},
+  shorttitle = {I/{O} in {Machine} {Learning} {Applications} on {HPC} {Systems}},
+  url        = {https://dl.acm.org/doi/10.1145/3722215},
+  doi        = {10.1145/3722215},
+  abstract   = {Growing interest in Artificial Intelligence (AI) has resulted in a surge in demand for faster methods of Machine Learning (ML) model training and inference. This demand for speed has prompted the use of high performance computing (HPC) systems that excel in managing distributed workloads. Because data is the main fuel for AI applications, the performance of the storage and I/O subsystem of HPC systems is critical. In the past, HPC applications accessed large portions of data written by simulations or experiments or ingested data for visualizations or analysis tasks. ML workloads perform small reads spread across a large number of random files. This shift of I/O access patterns poses several challenges to modern parallel storage systems. In this article, we survey I/O in ML applications on HPC systems, and target literature within a 6-year time window from 2019 to 2024. We define the scope of the survey, provide an overview of the common phases of ML, review available profilers and benchmarks, examine the I/O patterns encountered during offline data preparation, training, and inference, and explore I/O optimizations utilized in modern ML frameworks and proposed in recent literature. Lastly, we seek to expose research gaps that could spawn further R\&amp;D.},
+  number     = {10},
+  journal    = {ACM Comput. Surv.},
+  author     = {Lewis, Noah and Bez, Jean Luca and Byna, Suren},
+  month      = may,
+  year       = {2025},
+  pages      = {256:1--256:41},
+  urldate    = {2026-03-02}
+}
+
+
+@inproceedings{filesystems-unfit-bluestore,
+  author    = {Aghayev, Abutalib and Weil, Sage and Kuchnik, Michael and Nelson, Mark and Ganger, Gregory R. and Amvrosiadis, George},
+  title     = {File systems unfit as distributed storage backends: lessons from 10 years of Ceph evolution},
+  year      = {2019},
+  isbn      = {9781450368735},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3341301.3359656},
+  doi       = {10.1145/3341301.3359656},
+  abstract  = {For a decade, the Ceph distributed file system followed the conventional wisdom of building its storage backend on top of local file systems. This is a preferred choice for most distributed file systems today because it allows them to benefit from the convenience and maturity of battle-tested code. Ceph's experience, however, shows that this comes at a high price. First, developing a zero-overhead transaction mechanism is challenging. Second, metadata performance at the local level can significantly affect performance at the distributed level. Third, supporting emerging storage hardware is painstakingly slow.Ceph addressed these issues with BlueStore, a new back-end designed to run directly on raw storage devices. In only two years since its inception, BlueStore outperformed previous established backends and is adopted by 70\% of users in production. By running in user space and fully controlling the I/O stack, it has enabled space-efficient metadata and data checksums, fast overwrites of erasure-coded data, inline compression, decreased performance variability, and avoided a series of performance pitfalls of local file systems. Finally, it makes the adoption of backwards-incompatible storage hardware possible, an important trait in a changing storage landscape that is learning to embrace hardware diversity.},
+  booktitle = {Proceedings of the 27th ACM Symposium on Operating Systems Principles},
+  pages     = {353–369},
+  numpages  = {17},
+  keywords  = {storage backend, object storage, file system, distributed file system, Ceph},
+  location  = {Huntsville, Ontario, Canada},
+  series    = {SOSP '19},
+  urldate   = {2026-03-02}
+}
+
+@article{cern-evaluating-cephfs-perf,
+  title        = {Evaluating CephFS Performance vs. Cost on High-Density Commodity Disk Servers},
+  volume       = {5},
+  issn         = {2510-2044},
+  doi          = {10.1007/s41781-021-00071-1},
+  abstractnote = {CephFS is a network filesystem built upon the Reliable Autonomic Distributed Object Store (RADOS). At CERN we have demonstrated its reliability and elasticity while operating several 100-to-1000TB clusters which provide NFS-like storage to infrastructure applications and services. At the same time, our lab developed EOS to offer high performance 100PB-scale storage for the LHC at extremely low costs while also supporting the complete set of security and functional APIs required by the particle-physics user community. This work seeks to evaluate the performance of CephFS on this cost-optimized hardware when it is combined with EOS to support the missing functionalities. To this end, we have setup a proof-of-concept Ceph Octopus cluster on high-density JBOD servers (840 TB each) with 100Gig-E networking. The system uses EOS to provide an overlayed namespace and protocol gateways for HTTP(S) and XROOTD, and uses CephFS as an erasure-coded object storage backend. The solution also enables operators to aggregate several CephFS instances and adds features, such as third-party-copy, SciTokens, and high-level user and quota management. Using simple benchmarks we measure the cost/performance tradeoffs of different erasure-coding layouts, as well as the network overheads of these coding schemes. We demonstrate some relevant limitations of the CephFS metadata server and offer improved tunings which can be generally applicable. To conclude, we reflect on the advantages and drawbacks related to this architecture, such as RADOS-level free space requirements and double-network penalties, and offer ideas for improvements in the future.},
+  number       = {1},
+  journal      = {Computing and Software for Big Science},
+  author       = {Peters, Andreas J. and van der Ster, Daniel C.},
+  year         = {2021},
+  month        = nov,
+  pages        = {25}
+}
+
+
+@inproceedings{ceph-ornl-evaluation-filestore,
+  author    = {Wang, Feiyi and Nelson, Mark and Oral, Sarp and Atchley, Scott and Weil, Sage and Settlemyer, Bradley W. and Caldwell, Blake and Hill, Jason},
+  title     = {Performance and scalability evaluation of the Ceph parallel file system},
+  year      = {2013},
+  isbn      = {9781450325059},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/2538542.2538562},
+  doi       = {10.1145/2538542.2538562},
+  abstract  = {Ceph is an emerging open-source parallel distributed file and storage system. By design, Ceph leverages unreliable commodity storage and network hardware, and provides reliability and fault-tolerance via controlled object placement and data replication. This paper presents our file and block I/O performance and scalability evaluation of Ceph for scientific high-performance computing (HPC) environments. Our work makes two unique contributions. First, our evaluation is performed under a realistic setup for a large-scale capability HPC environment using a commercial high-end storage system. Second, our path of investigation, tuning efforts, and findings made direct contributions to Ceph's development and improved code quality, scalability, and performance. These changes should benefit both Ceph and the HPC community at large.},
+  booktitle = {Proceedings of the 8th Parallel Data Storage Workshop},
+  pages     = {14–19},
+  numpages  = {6},
+  location  = {Denver, Colorado},
+  series    = {PDSW '13},
+  urldate   = {2026-03-02}
+}
+
+@inproceedings{ceph-storage-arch,
+  author    = {Duwe, Kira and Kuhn, Michael},
+  title     = {Using ceph's BlueStore as object storage in HPC storage framework},
+  year      = {2021},
+  isbn      = {9781450383028},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3439839.3458734},
+  doi       = {10.1145/3439839.3458734},
+  abstract  = {In times of ever-increasing data sizes, data management and insightful analysis are amidst the most severe challenges of high-performance computing. While high-level libraries such as NetCDF, HDF5, and ADIOS2, as well as the associated self-describing data formats, offer convenient interfaces to complex data sets, they were built on outdated assumptions of storage systems and interfaces. They mostly rely on the POSIX interface that researchers have been aiming to replace for decades. Among others, its strict file semantics are not suitable for current HPC systems. As object storage has become increasingly prominent to store datasets of data formats like HDF5, providing a scalable object store back-end is necessary. Therefore, we looked into Ceph's object store BlueStore and developed a backend for the storage framework JULEA that uses BlueStore without the need for a full-fledged working Ceph cluster. This way, we significantly reduce the prerequisites of running it on an existing HPC cluster. BlueStore works directly on a raw block device and thereby circumvents the problems of other Ceph storage backends like Filestore and KStore.In a first evaluation, we examine the performance of Blue-Store and compare it to a POSIX-based solution which shows our prototype is functional yet not optimized enough to keep up with the POSIX-based object store. For example, the peak for explicitly synced writes is 50 MB/s for POSIX with a block size of 4,096 kiB and thereby twice as high as BlueStore's with 20.5 MB/s.},
+  booktitle = {Proceedings of the Workshop on Challenges and Opportunities of Efficient and Performant Storage Systems},
+  articleno = {3},
+  numpages  = {6},
+  keywords  = {storage framework, object store, filesystem, data management, POSIX, JULEA, BlueStore},
+  location  = {Online Event, United Kingdom},
+  series    = {CHEOPS '21},
+  urldate   = {2026-03-02}
+}
+
+@misc{ceph-discover,
+  author       = {{Ceph authors and contributors}},
+  title        = {Ceph.io - Technology},
+  howpublished = {\url{https://ceph.io/en/discover/technology}},
+  urldate      = {2026-03-02}
+}
+
+@misc{lustre-ha-wiki,
+  author  = {{Lustre authors and contributors}},
+  title   = {Creating a Framework for High Availability with Pacemaker},
+  url     = {https://wiki.lustre.org/Creating_a_Framework_for_High_Availability_with_Pacemaker},
+  urldate = {2026-03-02}
+}
+
+@misc{lustre-ha-wiki-zfs,
+  author  = {{Lustre authors and contributors}},
+  title   = {Managing Lustre with the ZFS backend as a High Availability Service},
+  url     = {https://wiki.lustre.org/Managing_Lustre_with_the_ZFS_backend_as_a_High_Availability_Service},
+  urldate = {2026-03-02}
+}
+
+
+
+@inproceedings{ceph-paper,
+  author    = {Weil, Sage A. and Brandt, Scott A. and Miller, Ethan L. and Long, Darrell D. E. and Maltzahn, Carlos},
+  title     = {Ceph: a scalable, high-performance distributed file system},
+  year      = {2006},
+  isbn      = {1931971471},
+  publisher = {USENIX Association},
+  address   = {USA},
+  abstract  = {We have developed Ceph, a distributed file system that provides excellent performance, reliability, and scalability. Ceph maximizes the separation between data and metadata management by replacing allocation tables with a pseudo-random data distribution function (CRUSH) designed for heterogeneous and dynamic clusters of unreliable object storage devices (OSDs). We leverage device intelligence by distributing data replication, failure detection and recovery to semi-autonomous OSDs running a specialized local object file system. A dynamic distributed metadata cluster provides extremely efficient metadata management and seamlessly adapts to a wide range of general purpose and scientific computing file system workloads. Performance measurements under a variety of workloads show that Ceph has excellent I/O performance and scalable metadata management, supporting more than 250,000 metadata operations per second.},
+  booktitle = {Proceedings of the 7th Symposium on Operating Systems Design and Implementation},
+  pages     = {307–320},
+  numpages  = {14},
+  location  = {Seattle, Washington},
+  series    = {OSDI '06}
+}
+
+@manual{mpi41,
+  author  = {{Message Passing Interface Forum}},
+  title   = {{MPI}: A Message-Passing Interface Standard Version 4.1},
+  url     = {https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf},
+  year    = 2023,
+  month   = nov,
+  urldate = {2026-03-02}
+}
+
+@misc{rook-doc-home,
+  author       = {{Rook authors and contributors}},
+  title        = {Rook},
+  howpublished = {\url{https://rook.io/docs/rook/latest-release/Getting-Started/intro/}},
+  urldate      = {2026-03-02}
+}
+
+@misc{rh-ceph-storage,
+  author  = {{Red Hat}},
+  title   = {Red Hat Ceph Storage},
+  url     = {https://www.redhat.com/en/technologies/storage/ceph},
+  urldate = {2026-03-02}
+}
+
+@misc{io500-full-list,
+  author  = {{IO500 Foundation}},
+  title   = {IO500 - ISC24 - Full List},
+  url     = {https://io500.org/download/isc24/full},
+  urldate = {2026-03-02}
+}
+
+@misc{lustre-manual,
+  author       = {{Lustre authors and contributors}},
+  title        = {Lustre* Software Release 2.x Operations Manual},
+  howpublished = {\url{https://doc.lustre.org/lustre_manual.pdf}},
+  urldate      = {2026-03-02}
+}
+
+@misc{lustre-homepage,
+  author       = {{Lustre authors and contributors}},
+  title        = {Welcome to the official home of the Lustre® filesystem},
+  howpublished = {\url{https://lustre.org}},
+  urldate      = {2026-03-02}
+}
+
+
+@misc{ceph-1tib,
+  author       = {Mark Nelson},
+  title        = {Ceph: A Journey to 1 TiB/s},
+  howpublished = {\url{https://ceph.io/en/news/blog/2024/ceph-a-journey-to-1tibps/}},
+  urldate      = {2026-03-02}
+}
+
+@misc{ceph-bluestore-migration,
+  author       = {{Ceph authors and contributors}},
+  title        = {BlueStore Migration - Ceph Documentation},
+  howpublished = {\url{https://docs.ceph.com/en/reef/rados/operations/bluestore-migration/}},
+  urldate      = {2026-03-02}
+}
+
+@misc{ceph-seastore,
+  author       = {{Ceph authors and contributors}},
+  title        = {SeaStore - Ceph Documentation},
+  howpublished = {\url{https://docs.ceph.com/en/reef/dev/seastore/}},
+  urldate      = {2026-03-02}
+}
+
+@manual{man7-md,
+  author       = {{Linux kernel contributors}},
+  title        = {{md - Multiple Device driver aka Linux Software RAID}},
+  howpublished = {\url{https://man7.org/linux/man-pages/man4/md.4.html}},
+  urldate      = {2026-03-02}
+}
+
+@misc{backblaze-drive-stats,
+  author       = {{Backblaze, Inc.}},
+  title        = {{Backblaze Drive Stats: Hard Drive Reliability Test Data}},
+  howpublished = {\url{https://www.backblaze.com/cloud-storage/resources/hard-drive-test-data}},
+  urldate      = {2026-03-02}
+}
+
+@misc{linux-doc-segmentation-offloads,
+  author       = {{Linux kernel development community}},
+  title        = {{Segmentation Offloads}},
+  howpublished = {\url{https://docs.kernel.org/networking/segmentation-offloads.html}},
+  urldate      = {2026-03-02}
+}
+
+ @book{Krotkiewski_2017,
+  title        = {Dealing with small Files in HPC Environments: automatic Loop-Back Mounting of Disk Images},
+  url          = {https://zenodo.org/records/832035},
+  doi          = {10.5281/zenodo.832035},
+  abstractnote = {Processing of large numbers (hundreds of thousands) of small files (i.e., up to a few KB) is notoriously problematic for all modern parallel file systems. While modern storage solutions provide high and scalable bandwidth through parallel storage servers connected with a high-speed network, accessing small files is sequential and latency-bounded. Paradoxically, performance of file access is worse than if the files were stored on a local hard drive. We present a generic solution for large-scale HPC facilities that improves the performance of workflows dealing with large numbers of small file. The files are saved inside a single large file containing a disk image, similarly to an archive. When needed, the image is mounted through the Unix loop-back device, and the contents of the image are available to the user in the form of a usual directory tree. Since mounting of disks under Unix often requires super-user privileges, security concerns and possible ways to address them are considered. A complete Python implementation of image creation, mounting, and unmounting framework is presented. A seamless integration into HPC environments managed by SLURM is discussed on an example of read-only software modules created by administrators, and user-created disk images with read-only application input data. Finally, results of performance benchmarks carried out on the Abel supercomputer facility in Oslo, Norway, are shown.},
+  institution  = {Zenodo},
+  author       = {Krotkiewski, Marcin},
+  year         = {2017},
+  month        = june,
+  urldate      = {2026-03-02}
+}
+
+
+ @inproceedings{small-file-hpc,
+  title        = {Small-file access in parallel file systems},
+  issn         = {1530-2075},
+  url          = {https://ieeexplore.ieee.org/document/5161029},
+  doi          = {10.1109/IPDPS.2009.5161029},
+  abstractnote = {Today's computational science demands have resulted in ever larger parallel computers, and storage systems have grown to match these demands. Parallel file systems used in this environment are increasingly specialized to extract the highest possible performance for large I/O operations, at the expense of other potential workloads. While some applications have adapted to I/O best practices and can obtain good performance on these systems, the natural I/O patterns of many applications result in generation of many small files. These applications are not well served by current parallel file systems at very large scale. This paper describes five techniques for optimizing small-file access in parallel file systems for very large scale systems. These five techniques are all implemented in a single parallel file system (PVFS) and then systematically assessed on two test platforms. A microbenchmark and the mdtest benchmark are used to evaluate the optimizations at an unprecedented scale. We observe as much as a 905% improvement in small-file create rates, 1,106% improvement in small-file stat rates, and 727% improvement in small-file removal rates, compared to a baseline PVFS configuration on a leadership computing platform using 16,384 cores.},
+  booktitle    = {2009 IEEE International Symposium on Parallel \& Distributed Processing},
+  author       = {Carns, Philip and Lang, Sam and Ross, Robert and Vilayannur, Murali and Kunkel, Julian and Ludwig, Thomas},
+  year         = {2009},
+  month        = may,
+  pages        = {1–11},
+  urldate      = {2026-03-02}
+}
+
+
+ @inproceedings{hpc-io-prediction,
+  title        = {Characterizing and predicting the I/O performance of HPC applications using a parameterized synthetic benchmark},
+  issn         = {2167-4337},
+  url          = {https://ieeexplore.ieee.org/document/5222721},
+  doi          = {10.1109/SC.2008.5222721},
+  abstractnote = {The unprecedented parallelism of new supercomputing platforms poses tremendous challenges to achieving scalable performance for I/O intensive applications. Performance assessments using traditional I/O system and component benchmarks are difficult to relate back to application I/O requirements. However, the complexity of full applications motivates development of simpler synthetic I/O benchmarks as proxies to the full application. In this paper we examine the I/O requirements of a range of HPC applications and describe how the LLNL IOR synthetic benchmark was chosen as suitable proxy for the diverse workload. We show a procedure for selecting IOR parameters to match the I/O patterns of the selected applications and show it can accurately predict the I/O performance of the full applications. We conclude that IOR is an effective replacement for full-application I/O benchmarks and can bridge the gap of understanding that typically exists between stand-alone benchmarks and the full applications they intend to model.},
+  booktitle    = {SC '08: Proceedings of the 2008 ACM/IEEE Conference on Supercomputing},
+  author       = {Shan, Hongzhang and Antypas, Katie and Shalf, John},
+  year         = {2008},
+  month        = nov,
+  pages        = {1–12},
+  urldate      = {2026-03-02}
+}
+
+@book{modern-operating-systems-book,
+  author    = {Andrew Tannenbaum},
+  title     = {Modern Operating Systems},
+  publisher = {Pearson},
+  year      = {2023}
+}
+
+@inproceedings{raid-paper,
+  author    = {Patterson, David A. and Gibson, Garth and Katz, Randy H.},
+  title     = {A case for redundant arrays of inexpensive disks (RAID)},
+  year      = {1988},
+  isbn      = {0897912683},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/50202.50214},
+  doi       = {10.1145/50202.50214},
+  abstract  = {Increasing performance of CPUs and memories will be squandered if not matched by a similar performance increase in I/O. While the capacity of Single Large Expensive Disks (SLED) has grown rapidly, the performance improvement of SLED has been modest. Redundant Arrays of Inexpensive Disks (RAID), based on the magnetic disk technology developed for personal computers, offers an attractive alternative to SLED, promising improvements of an order of magnitude in performance, reliability, power consumption, and scalability. This paper introduces five levels of RAIDs, giving their relative cost/performance, and compares RAID to an IBM 3380 and a Fujitsu Super Eagle.},
+  booktitle = {Proceedings of the 1988 ACM SIGMOD International Conference on Management of Data},
+  pages     = {109–116},
+  numpages  = {8},
+  location  = {Chicago, Illinois, USA},
+  series    = {SIGMOD '88},
+  urldate   = {2026-03-02}
+}
+
+@misc{snia-ddf,
+  author       = {{Storage Networking Industry Association}},
+  title        = {{Common RAID Disk Data Format Specification}},
+  edition      = {v2.0},
+  howpublished = {\url{https://www.snia.org/sites/default/files/SNIA_DDF_Technical_Position_v2.0.pdf}},
+  urldate      = {2026-03-02}
+}
+
+@misc{rh-ceph-storage-raid,
+  author       = {{Red Hat, Inc.}},
+  title        = {{Chapter 2. Red Hat Ceph Storage considerations and recommendations}},
+  howpublished = {\url{https://docs.redhat.com/en/documentation/red_hat_ceph_storage/8/html/installation_guide/red-hat-ceph-storage-considerations-and-recommendations}},
+  urldate      = {2026-03-02}
+}
+
+@misc{omni-path-tuning-guide,
+  author       = {{Cornelis Networks}},
+  title        = {{Cornelis® Omni-Path Express® Fabric Performance Tuning}},
+  howpublished = {\url{https://customercenter.cornelisnetworks.com/download/omni-path-express-performance-tuning-user-guide}},
+  urldate      = {2026-03-02}
+}
+
+@techreport{using-hpc-networks,
+  author       = {Tim Dettmar},
+  title        = {{Using High-Performance Networks}},
+  howpublished = {\url{https://hps.vi4io.org/_media/teaching/autumn_term_2023/stud/hpcsa_tim_dettmar.pdf}},
+  year         = 2024,
+  urldate      = {2026-03-02}
+}
+
+@misc{ceph-blog-osd-per-disk,
+  author       = {Mark Nelson},
+  title        = {{Ceph Reef - 1 or 2 OSDs per NVMe?}},
+  howpublished = {\url{https://ceph.io/en/news/blog/2023/reef-osds-per-nvme/}},
+  urldate      = {2026-03-02}
+}
+
+
+@book{linux_kernel_networking,
+  title     = {Linux {Kernel} {Networking}: {Implementation} and {Theory}},
+  isbn      = {978-1-4302-6196-4},
+  publisher = {Apress},
+  year      = {2013},
+  author    = {Rosen, Rami}
+}
+
+
+@article{ieee_802_3_2022,
+  author   = {},
+  journal  = {IEEE Std 802.3-2022 (Revision of IEEE Std 802.3-2018)},
+  title    = {IEEE Standard for Ethernet},
+  year     = {2022},
+  volume   = {},
+  number   = {},
+  pages    = {1-7025},
+  keywords = {IEEE Standards;Standards;IEEE 802.3 Standard;EPON;Optical fiber LAN;Physical layer;Optical fiber cables;2.5 Gigabit Ethernet;5 Gigabit Ethernet;10 Gigabit Ethernet;25 Gigabit Ethernet;40 Gigabit Ethernet;50 Gigabit Ethernet;100 Gigabit Ethernet;200 Gigabit Ethernet;400 Gigabit Ethernet;AN;attachment unit interface;AUI;Auto-Negotiation;Backplane Ethernet;balanced cable;data processing;DTE Power via the MDI;EEE;Energy-Efficient Ethernet;EPoC;EPON;EPON protocol over coax;Ethernet;Ethernet in the first mile;Ethernet Passive Optical Network;express traffic;Fast Ethernet;FEC;forward error correction;Gigabit Ethernet;IEEE 802.3;information exchange;isolation;LAN;local area network;management;MCRS;MDI;media independent interface;medium dependent interface;MIB;MII;MMF;MPCP;Multi-Channel Reconciliation Sublayer;multimode fiber;multipoint control protocol;P2MP;PCS;PD;PHY;physical coding sublayer;Physical Layer;Physical Layer Collision Avoidance;Physical Layer device;physical medium attachment;physical medium dependent;PLCA;PMA;PMD;PoDL;PoE;point to multipoint;Power over Data Lines;Power over Ethernet;Power Sourcing Equipment;Powered Device;PSE;reconciliation sublayer;repeater;RS;single-mode fiber;SMF;type field},
+  doi      = {10.1109/IEEESTD.2022.9844436}
+}

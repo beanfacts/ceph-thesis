@@ -1,0 +1,4 @@
+ceph> osd pool set bench size 1
+Error EPERM: WARNING: setting pool size 1 could lead to data loss without recovery. If you are *ABSOLUTELY CERTAIN* that is what you want, pass the flag --yes-i-really-mean-it.
+ceph> osd pool set bench size 1 --yes-i-really-mean-it
+set pool 4 size to 1

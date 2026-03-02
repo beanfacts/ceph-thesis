@@ -1,0 +1,9 @@
+~# fio --name=read-test --filename=/dev/vdb --rw=read --bs=8M --size=1G
+...
+Run status group 0 (all jobs):
+   READ: bw=50.4MiB/s (52.9MB/s), 50.4MiB/s-50.4MiB/s (52.9MB/s-52.9MB/s), io=1024MiB (1074MB), run=20298-20298msec
+
+~# hdparm --direct -t /dev/vdb
+
+/dev/vdb:
+ Timing O_DIRECT disk reads: 158 MB in  3.02 seconds =  52.28 MB/sec

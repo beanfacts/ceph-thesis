@@ -1,0 +1,12 @@
+rx-checksumming: on
+tx-checksumming: on
+	tx-checksum-ipv4: on
+	tx-checksum-ipv6: on
+scatter-gather: on
+	tx-scatter-gather: on
+tcp-segmentation-offload: on
+	tx-tcp-segmentation: on
+	tx-tcp6-segmentation: on
+generic-segmentation-offload: on
+generic-receive-offload: on
+receive-hashing: on

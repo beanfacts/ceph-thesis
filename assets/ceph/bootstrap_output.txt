@@ -1,0 +1,7 @@
+Ceph Dashboard is now available at:
+
+         URL: https://cvm1:8443/
+        User: admin
+    Password: 5qlnr33b6t
+
+Bootstrap complete.

@@ -1,0 +1,36 @@
+[mon.]
+key = QApDhppfMN1BRAAhHuMdbg0lecegCvIV7jjtw==
+caps mon = allow *
+
+[client.admin]
+key = AQAhDhppcjeJBxAA+p/MNhnSDyNMIyLpUhUHFQ==
+caps mon = allow *
+caps mgr = allow *
+caps osd = allow *
+caps mds = allow *
+
+[client.test]
+key = AQBZDhppedP9DRAAowkvRO3q5L/yBospSHgsvw==
+caps mon = allow r
+caps mgr = allow r
+caps osd = allow rwx
+caps mds = allow rwx
+
+[mgr.0]
+key = AQA1DhppvXXLIxAAGdQYmOZpcwg3g4x9MZEDBQ==
+caps mon = allow profile mgr
+caps mds = allow *
+caps osd = allow *
+
+[mds.x0]
+key = AQA+DhppfVGSExAAAIZ+M731ckLAVjTI7ybfZQ==
+caps mon = allow profile mds
+caps mgr = allow profile mds
+caps mds = allow *
+caps osd = allow rwx
+
+[osd.0]
+key = AQBEDhppuboNNBAAPRXIlRgsVQXmkWrddwhpzw==
+caps mon = allow profile osd
+caps mgr = allow profile osd
+caps osd = allow *

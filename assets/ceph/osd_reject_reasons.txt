@@ -1,0 +1,9 @@
+HOST  PATH      TYPE  DEVICE ID   SIZE  AVAILABLE  REFRESHED  REJECT REASONS
+cvm1  /dev/vdb  hdd              16.0G  No         88s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected
+cvm2  /dev/vdb  hdd              16.0G  No         89s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected
+cvm3  /dev/vdb  hdd              16.0G  No         89s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected
+cvm4  /dev/vdb  hdd              16.0G  No         89s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected
+cvm5  /dev/vdb  hdd              16.0G  No         90s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected
+cvm6  /dev/vdb  hdd              16.0G  No         89s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected
+cvm7  /dev/vdb  hdd              16.0G  No         89s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected
+cvm8  /dev/vdb  hdd              16.0G  No         90s ago    Has a FileSystem, Insufficient space (<10 extents) on vgs, LVM detected

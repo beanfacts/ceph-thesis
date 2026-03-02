@@ -1,0 +1,47 @@
+{
+    "nodes": {
+        "node1": {
+            "addr": "192.0.2.1",
+            "daemons": [
+                {"name": "mon.node1"},                
+                {"name": "mds.x0"},
+                {"name": "mgr.0"}
+            ]
+        },
+        "node2": {
+            "addr": "192.0.2.2",
+            "daemons": 
+                {"name": "osd.0"},
+                {"name": "osd.1"},
+                {"name": "osd.2"}
+            ]
+        },
+        "node3": {
+            "addr": "192.0.2.3",
+            "daemons": [
+                {"name": "osd.3"},
+                {"name": "osd.4"},
+                {"name": "osd.5"},
+                {"name": "osd.6"}
+            ]
+        },
+        "node4": {
+            "addr": "192.0.2.4",
+            "daemons": [
+                {"name": "osd.7"},
+                {"name": "osd.8"},
+                {"name": "osd.9"}
+            ]
+        },
+    },
+    "monmap": "CQbVAAAAyK ...",
+    "ceph_config": "[global]\nfsid = b601c2b8-11 ...",
+    "image": {
+        "name": "/mnt/.../ceph_v20.2.0.sif",
+        "type": "sif"
+    },
+    "keyring": "[mon.]\nkey = AQB ...",
+    "domain": "example.com",
+    "deployer_name": "cuttlefish.deployer",
+    "runtime": "apptainer"
+}

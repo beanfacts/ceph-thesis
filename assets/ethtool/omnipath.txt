@@ -1,0 +1,4 @@
+scatter-gather: on
+	tx-scatter-gather: on [fixed]
+generic-segmentation-offload: on
+generic-receive-offload: on

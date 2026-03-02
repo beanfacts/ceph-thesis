@@ -1,0 +1,5 @@
+RANK  STATE   MDS     ACTIVITY     DNS    INOS   DIRS   CAPS  
+ 0    active   x2  Reqs: 7858 /s   212    209     79      2   
+ 1    active   x0  Reqs:    0 /s  4062    274    273      0   
+ 2    active   x3  Reqs:    0 /s   885     73     70      1   
+ 3    active   x1  Reqs:    0 /s  2420    176    175      0   

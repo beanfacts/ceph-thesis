@@ -1,0 +1,5 @@
+u11145@ggpu108 ~ $ apptainer instance list
+INSTANCE NAME             PID        IP    IMAGE
+cuttlefish.helper         3293949          /mnt/.../images/ceph_v20.2.0.sif
+cuttlefish.mgr.0          3294638          /mnt/.../images/ceph_v20.2.0.sif
+cuttlefish.mon.ggpu108    3295169          /mnt/.../images/ceph_v20.2.0.sif

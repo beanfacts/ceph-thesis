@@ -1,0 +1,297 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Thesis Template
+% LaTeX Template
+% Version 1.5.1 (2024-02-20)
+%
+% This template was adapted by:
+% Lars Quentin (lars.quentin@stud.uni-goettingen.de) and
+% Jonathan Decker (jonathan.decker@uni-goettingen.de)
+% Adapted from the informatics master and bachelor thesis template
+% offered by the University Göttingen
+% https://www.uni-goettingen.de/de/626775.html
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% !TEX root = main.tex
+
+% --- document configuration ---
+
+%cf-ignore-acro-begin
+
+\newcommand{\thesistitle}{Evaluation of Ceph as a File~System~for~HPC}
+\newcommand{\firstsupervisor}{Dr. Julian Kunkel}
+\newcommand{\secondsupervisor}{Dr. Sebastian Krey}
+\newcommand{\authorname}{Tim Dettmar}
+\newcommand{\university}{Georg-August-Universität Göttingen}
+\newcommand{\department}{Institute of Computer Science}
+\newcommand{\thesistype}{Master's Thesis} % Bachelor's Thesis or Master's Thesis
+\newcommand{\course}{Applied Computer Science}
+\newcommand{\matrikelnumber}{26327113}
+\newcommand{\keywords}{Ceph} % Set keywords that describe your report
+\newcommand{\documentlanguage}{en-US} % Required for PDF/A
+\newcommand{\submissiondate}{\today}
+
+% --- PDF/A compliance ---
+% Taken from the template provided by the Institute of Informatics, University of Goettingen
+\pdfminorversion=7
+\begin{filecontents*}{\jobname.xmpdata}
+	\Title{\thesistitle}
+	\Author{\authorname}
+	\Language{\documentlanguage}
+	\Subject{The abstract, or short description}
+	\Keywords{\keywords}
+\end{filecontents*}
+
+\documentclass[12pt, a4paper, hidelinks]{article}
+
+% \usepackage{subfig}
+\usepackage{enotez}
+\usepackage{adjustbox}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[english,british]{babel}
+\usepackage[nottoc]{tocbibind}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{pgfplots}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[backend=biber,style=alphabetic]{biblatex}
+\addbibresource{ref.bib} % The filename of the bibliography
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{acronym}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{lipsum}
+\usepackage{array, tabularx, booktabs} % For better tables
+\usepackage{longtable}
+\usepackage{xurl}
+
+\usepackage{marvosym} % For Telephone, fax and Letter symbols
+\usepackage{listings} % Code environments
+\usepackage{lstautogobble}  % Fix relative indenting
+\usepackage{color}          % Code coloring
+\usepackage{zi4}            % Nice font
+\usepackage{minted}
+\usemintedstyle{tango}
+\setminted{linenos, autogobble, bgcolor=gray!5}
+\usepackage{amsmath}
+\usepackage{cleveref}
+\usepackage{titlesec}
+\setlength{\marginparwidth}{2cm}
+\usepackage{todonotes}
+\usepackage[autostyle=true]{csquotes}
+\usepackage{multirow}
+\usepackage{diagbox}
+\usepackage{xfrac}
+\usepackage{subcaption}
+
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\usepackage{wrapfig}
+\usepackage{floatflt}
+\usepackage{placeins}
+
+\usepackage{markdown}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{backcolour}{gray}{0.95}
+\definecolor{codeorange}{rgb}{0.8,0.5,0.2}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},  
+    commentstyle=\color{codegray},
+    keywordstyle=\color{codeorange},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codegreen},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=20pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    linewidth=.9725\textwidth,
+}
+
+\lstset{style=mystyle}
+
+\definecolor{bluekeywords}{rgb}{0.13, 0.13, 1}
+\definecolor{greencomments}{rgb}{0, 0.5, 0}
+\definecolor{redstrings}{rgb}{0.9, 0, 0}
+\definecolor{graynumbers}{rgb}{0.5, 0.5, 0.5}
+
+\lstset{
+    autogobble,
+    columns=fullflexible,
+    showspaces=false,
+    showtabs=false,
+    breaklines=true,
+    showstringspaces=false,
+    breakatwhitespace=true,
+    escapeinside={(*@}{@*)},
+    commentstyle=\color{greencomments},
+    keywordstyle=\color{bluekeywords},
+    stringstyle=\color{redstrings},
+    numberstyle=\color{graynumbers},
+    basicstyle=\ttfamily\footnotesize,
+    frame=l,
+    framesep=12pt,
+    xleftmargin=12pt,
+    tabsize=4,
+    captionpos=b
+}
+
+\lstdefinelanguage{ini}{
+    basicstyle=\ttfamily\small,
+    columns=fullflexible,
+    morecomment=[l]{\#},
+    morecomment=[l]{;},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    keywordstyle=\color{blue}\bfseries,
+    identifierstyle=\color{black},
+}
+
+\titleformat{\section}[hang]{\huge\bfseries}{\thesection\hspace{20pt}}{0pt}{\huge\bfseries}
+\graphicspath{{Figures/}{./}{Assets/}}
+
+\newcommand{\ccheckmark}{\mbox{\ooalign{$\checkmark$\cr\hidewidth$\square$\hidewidth\cr}}}
+\newcommand{\ccheckbox}{\mbox{$\square$}}
+
+\newcommand{\addemptypage}{\newpage\null\thispagestyle{empty}\newpage}
+
+\begin{document}
+
+\fancyhead{}
+\fancyhead[R]{\footnotesize \thesistitle}
+\fancyfoot{}
+\fancyfoot[R]{\thepage}
+\fancyfoot[L]{Section \thesection}
+\fancyfoot[C]{\authorname}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\pagestyle{empty}
+\hypersetup{pageanchor=false} %Avoid issue with invisible numbering style
+\input{titlepage}
+
+% --- abstract ---
+
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\section*{Abstract}
+\input{abstract}
+
+\newpage
+
+\vfill
+
+% Fill out the statement by setting \ccheckbox for points that do not apply and \ccheckmark for points that do apply
+
+\subsection*{Declaration on the use of ChatGPT and comparable tools\\ in the context of examinations}
+\noindent In this work I have used ChatGPT or another AI as follows:
+\begin{itemize}
+	\item[\ccheckbox] Not at all
+	\item[\ccheckmark] During brainstorming
+	\item[\ccheckmark] When creating the outline
+	\item[\ccheckmark] To write individual passages, altogether to the extent of 5\% of the entire text % Set the percentage if this point applies
+	\item[\ccheckmark] For the development of software source texts
+	\item[\ccheckmark] For optimizing or restructuring software source texts
+	\item[\ccheckmark] For proofreading or optimizing
+	\item[\ccheckmark] Further, namely: 
+    \begin{itemize}
+        \item Formatting of tables and figures into \LaTeX {}{} syntax
+        \item Debugging code
+        \item Generating and fixing Plotly code to extract collected data for charts
+        \item Generation of code for detecting and fixing of thesis formatting issues
+    \end{itemize}
+\end{itemize}
+I hereby declare that I have stated all uses completely.\\
+Missing or incorrect information will be considered as an attempt to cheat.
+
+
+\vfill
+
+\newpage
+
+%cf-ignore-acro-end
+
+\section*{Acknowledgements}
+
+I would like to express my gratitude to my supervisors, Julian Kunkel and
+Jonathan Decker, for their guidance, support, and feedback throughout this
+thesis.
+
+I am also thankful to the \ac{GWDG} for providing access to their computing
+infrastructure as well as the generous core-hour allocations necessary to
+perform the large-scale tests that made the thesis possible.
+
+Furthermore, I would like to thank my family and friends for their encouragement
+and support during the many long and challenging phases of this work.
+
+Last but not least, I would like to acknowledge an anonymous participant of the
+Chaos Communication Congress, whose willingness to lend their time sharing their
+practical knowledge and experience guided me towards identifying and resolving
+particularly peculiar bugs within my Ceph setup.
+
+\newpage
+\pagestyle{plain}
+% --- table of contents ---
+% Comment out the lists you are not using
+\clearpage
+% if you have abbreviations
+\input{abbreviations}
+
+\thispagestyle{plain}
+\newpage
+
+\phantomsection\pdfbookmark{\contentsname}{toc}
+\tableofcontents
+
+\newpage
+\clearpage\phantomsection
+\listoftables
+\newpage
+\clearpage
+\phantomsection
+\listoffigures
+\newpage
+\clearpage
+\phantomsection
+\listoflistings \addcontentsline{toc}{section}{List of Listings}
+\newpage
+
+% --- content ---
+
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+
+\input{content}
+
+% --- references ---
+
+\newpage
+\printbibliography[heading=bibintoc]
+
+% --- your appendix ---
+\appendix
+\break
+
+\pagenumbering{arabic}
+\renewcommand*{\thepage}{A\arabic{page}}
+
+\newpage
+\input{appendix}
+
+\end{document}

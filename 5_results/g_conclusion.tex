@@ -1,0 +1,31 @@
+\subsection{Reflection on Goals}
+\label{sec:reflection-on-goals}
+
+Returning to our goals discussed in the thesis introduction, we reflect on the extent to which each has been addressed.
+
+\begin{itemize}
+    \item Our comparison of \ac{RADOS} and \ac{CephFS} on the same cluster successfully isolated the overhead introduced by the file system layer, revealing minimal overhead for large sequential \ac{I/O}~(\Cref{fig:cephfs-tcp-seq-64m-repl3}) but significant penalties for small \ac{I/O} operations~(\Cref{fig:cephfs-tcp-seq-4k-2m-repl3-8N}). Additionally, \ac{CephFS} write performance was constrained by \ac{MDS} throughput~(\Cref{fig:cephfs-tcp-seq-4k-2m-repl3-8N-wr}).
+
+    \item Our scalability evaluation using \ac{IOR} and mdtest demonstrated strong, close to linear read scaling with the \ac{RADOS} interface~(\Cref{fig:rados-tcp-seq-64m-repl3-pernode-normalized}), but highlighted \ac{MDS} limitations at the \ac{CephFS} layer~(\Cref{fig:mdtest-violin-file-stat-8n,fig:mdtest-violin-file-stat-2n}), at least in the context of our limited test setup, which used random folder pinning in order to produce scaling results with mdtest.
+
+    \item Our evaluation of network fabrics was partially achieved. \ac{TCP} over InfiniBand was able to saturate the network link~(\Cref{sec:results-network-bandwidth-ib}), while Omni-Path \ac{TCP} throughput was significantly constrained by \ac{CPU} processing overhead~(\Cref{sec:results-network-bandwidth-opa}). Our initial benchmarks of Ceph on the Omni-Path fabric showed promising scaling results~(\Cref{fig:omnipath-seq-64m}), but a kernel vulnerability in the \texttt{hfi1} driver~(\Cref{sec:opa-bad-root-cause-analysis}) prevented a complete evaluation.
+
+    \item Our analysis of replication and \acl{EC} performance trade-offs showed the benefits of erasure coding for disk-limited workloads~(\Cref{fig:128pg-write-scaling}). At scale, \ac{EC} write performance was mostly comparable to replication for both \ac{RADOS}~(\Cref{fig:rados-tcp-repl-ec-ratio-seq-64m}) and \ac{CephFS}~(\Cref{fig:cephfs-tcp-ec-ratio-seq-64m}). Metadata operations were unaffected by pool type~(\Cref{fig:mdtest-file-create-ec-replicated}), which was expected, due to the common replica-3 metadata pool configuration.
+
+    \item Finally, in the system administration perspective, our goals were partially met. The Cuttlefish framework we developed demonstrated the feasibility of rootless Ceph deployment on \ac{HPC} nodes for architectural benchmarking purposes, while our evaluation of the cephadm tool was generally positive, despite some minor usability issues~(\Cref{sec:system-admin-issues}). However, we were unable to perform a large-scale test of Ceph with physical storage devices, especially high-performance \acp{SSD}, which would have allowed us to evaluate Ceph's performance under production-grade conditions.      
+\end{itemize}
+
+\subsubsection{Deployment Recommendations}
+\label{sec:deployment-recommendations}
+
+Based on our findings, we offer the following practical considerations for deploying Ceph in \ac{HPC} environments:
+
+\begin{itemize}
+    \item Erasure-coded pools should be considered for archival storage with predominantly large, sequential \ac{I/O} patterns, where they can offer better storage efficiency compared to replication, with better performance for these scenarios when disk performance is write-limited~(\Cref{fig:128pg-write-scaling,fig:rados-tcp-repl-ec-ratio-seq-64m,fig:cephfs-tcp-ec-ratio-seq-64m}). Replicated pools remain preferable for latency-sensitive or metadata-heavy workloads, such as home, scratch, and application data directories.
+
+    \item The per-task \ac{IOPS} ceiling we observed~(\Cref{fig:rados-tcp-seq-4k-2m-repl3}), wihhc has been corroborated at larger scales~\cite{ceph-1tib}, suggests that single-threaded or low-concurrency applications may not benefit from Ceph's aggregate throughput capabilities. Based on our large sequential \ac{I/O} results~(\Cref{fig:rados-tcp-seq-64m-repl3}), we suggest that workloads should be designed to use sufficient levels of parallel \ac{I/O}, ideally across multiple client nodes, in order to make efficient use of Ceph's capabilities.
+
+    \item For workloads generating high metadata loads, such as \ac{AI} training pipelines or code compilation tasks, the loopback mount approach~\cite{Krotkiewski_2017} is worth considering. Our mdtest and small \ac{I/O} results~(\Cref{fig:mdtest-violin-file-stat-8n,fig:mdtest-violin-file-stat-2n,fig:cephfs-tcp-seq-4k-2m-repl3-8N-wr}) show that \ac{MDS} performance remains a bottleneck even with multiple daemons, and shifting the \ac{I/O} load onto the more scalable \ac{RADOS} layer could alleviate this, provided the application can work with an overlay file system. However, we were unable to evaluate the performance of the loopback mount approach in our benchmarks due to limited permissions.
+
+    \item Ceph's \acs{TCP}-based messenger implementation can put significant pressure on the host's network stack. Our network benchmarks~(\Cref{fig:ib-tcp-throughput,fig:opa-tcp-throughput}) and the kernel-level failures encountered on Omni-Path~(\Cref{sec:opa-bad-root-cause-analysis}) demonstrate that deployment on networks with performant stateless \ac{TCP/IP} hardware offload support, such as Ethernet or modern InfiniBand networks, is advisable over fabrics with limited \ac{TCP} offload capabilities, such as Omni-Path.
+\end{itemize}

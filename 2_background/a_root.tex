@@ -1,0 +1,78 @@
+\newpage
+\section{Background}
+\label{sec:background}
+
+\subsection{Overview}
+
+The question of how well Ceph performs as a file system in \ac{HPC} can be divided into two problems. We first need to answer the question of what storage is actually needed and used for in the high-performance computing sector. The findings from this initial question define the framework for the demands placed on file systems by \ac{HPC} users, which can then be used to determine benchmarking methods suitable for file system testing. Although the focus will be on Ceph in this thesis, the goal is for the work performed in this thesis, especially with regard to evaluation and benchmarking, to be applicable to other parallel file systems that may also be under consideration.
+
+In this section, the groundwork for the rest of the thesis will be laid out by covering the fundamental concepts of file systems and how they relate to \ac{HPC}. Relevant existing literature on the topic of metrics for \ac{HPC} file systems as well as Ceph in particular will additionally be covered. 
+
+\subsection{File Systems}
+
+Before focusing on Ceph specifically, this section will introduce the basic concepts behind file systems and their relevance.
+
+At the lowest level, data are typically stored on disks, be it \acp{HDD}, \acp{SSD}, or other technologies~\cite[ch.~4]{modern-operating-systems-book}. These present themselves to the operating system as \enquote{block devices}, which are arrays of fixed-size \enquote{blocks} (e.g., 4\,kilobytes). The operating system reads and writes raw binary data by addressing individual blocks. At this level, there are no filenames, folders, or other high-level abstractions.
+
+A subset of file systems known as disk-based file systems are developed on top of these block devices. These organize the data on the disks, provide a hierarchical storage layout (i.e., folders), and provide a range of other abstractions, such as access control, checksumming, and redundancy. The exact feature set depends on the file system. These file systems are used in every major operating system, including Windows, macOS, and Linux.
+
+When scaling up to meet \ac{HPC} demands, the performance and capacity requirements exceed the capabilities of a single server. Parallel or distributed file systems address this limitation---in contrast to local file systems (ext4, XFS, ZFS, etc.) which communicate directly with block devices, distributed file systems store data across the disks of multiple storage nodes, scaling both performance and capacity. Clients access the file system over the network, and the file system's metadata services manage file and directory operations across the cluster.
+
+There are several parallel file systems, such as Lustre, BeeGFS, and DAOS, which are specifically targeted towards \ac{HPC} use cases\footnote{\url{https://www.lustre.org}, \url{https://www.beegfs.io}, \url{https://daos.io}. Accessed 01.03.2026.}. However, there are more general-purpose distributed file systems, including Ceph, which have seen limited adoption in \ac{HPC}, despite their widespread use outside of it.
+
+\subsection{\acs{RAID}}
+\label{sec:raid}
+
+Storage devices are subject to constraints in performance and reliability. For example, Backblaze~\cite{backblaze-drive-stats}, a cloud storage provider, reported an annualized drive failure rate of 1.3\%. \ac{RAID} addresses these limitations by combining multiple disks to improve performance and/or reliability~\cite{raid-paper}. Several \ac{RAID} levels exist---we will cover the levels 0, 1, 5 and 6 in this overview, based on the definitions provided by the \acl{SNIA}~\cite{snia-ddf}.
+
+The most basic levels are \ac{RAID}~0 and \ac{RAID}~1. \ac{RAID}~0 stripes data across disks, multiplying both throughput and capacity by the number of disks but providing no fault tolerance---the loss of any single disk results in data loss. \acs{RAID}~1 increases the resiliency of data storage by mirroring data across disks, such that the array remains functional as long as at least one disk survives, at the cost of capacity being limited to a single disk's size.
+
+\begin{wrapfigure}{l}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{assets/raid/RAID5.pdf}
+    \caption[\acs{RAID} 5 Configuration]{Data distribution across disks in a \acs{RAID} 5 configuration, demonstrating how data can be reconstructed after a single-disk failure through parity calculations.}
+    \label{fig:raid5}
+\end{wrapfigure}
+
+\noindent\ac{RAID} 5 (see \cref{fig:raid5}) and \ac{RAID}~6 offer a middle ground by striping data together with parity information across disks. \ac{RAID}~5 uses single parity and can tolerate one disk failure, while \ac{RAID}~6 uses double parity for two-failure tolerance. Compared to mirroring, parity \ac{RAID} provides significantly better storage utilization---a 3-disk \ac{RAID}~5 achieves $\frac{2}{3}$ efficiency versus 50\% for a 2-disk mirror---at the expense of additional compute overhead for parity calculations. These levels can scale to larger disk counts, though the probability of an additional failure during recovery increases accordingly.
+
+The aforementioned levels may also be combined by nesting, such as in \ac{RAID}~10, which combines \ac{RAID}~1 and \ac{RAID}~0 to provide both fault tolerance and performance. For example, a 4-disk \ac{RAID}~10 array may be considered as a \ac{RAID}~0 across two \ac{RAID}~1 sub-arrays.
+
+The Lustre file system effectively implements \ac{RAID}~0~\cite[p.~11]{lustre-manual}, striping data across multiple disks to improve performance. However, because \ac{RAID}~0 does not provide any fault tolerance, Lustre relies on the underlying file system, such as ZFS, to provide fault tolerance with another \ac{RAID} level, such as \ac{RAID} levels 1, 5, or 6, or 10~\cite[p.~16]{lustre-manual}.
+
+While these standard \ac{RAID} levels are widely implemented across both software and hardware solutions, Ceph does not strictly follow the defined levels. Instead, it supports replication (analogous to \ac{RAID}~1) and erasure coding (a generalization of the fixed \ac{RAID} levels), the latter of which we will cover in \cref{sec:erasure-coding}.
+
+\subsection{Erasure Coding}
+\label{sec:erasure-coding}
+
+Erasure coding is a method of ensuring data resilience and fault tolerance through the fragmentation of data into multiple independent data and coding chunks. The theoretical basis of erasure coding provides a mathematical guarantee of data durability with reduced storage overhead compared to traditional mirrored data replication. Ceph uses Reed-Solomon error correction~\cite{reed-solomon-original-paper} for its erasure coding implementation.
+
+Reed-Solomon error-correcting codes allow for a flexible number $k$ of data chunks and $m$ coding chunks to be used based on application requirements. In Ceph's case, these are typically scale, performance, efficiency, and durability requirements~\cite{ceph_erasure_code}. Data are broken up into a total of $k$ data chunks and $m$ coding chunks for a total of $n$ chunks, such that a loss of up to $m$ total chunks, regardless of whether these chunks are data or coding chunks, allows for the recomputation of the data from the remaining chunks in the system. Ceph distributes data across multiple failure domains, such as physical servers or disks. This ensures that a single failure in the domain, such as disk or node failure, does not result in unrecoverable data loss.
+
+The storage efficiency of erasure-coded storage is determined by its coding rate, i.e., the ratio of data chunks to total chunks. Conversely, the inverse of this ratio represents the amount of storage required with the erasure coding profile to store the desired amount of useful data. \Cref{tbl:ec-profiles} shows the efficiency of various erasure-coding profiles: with all replication/erasure-coding profiles shown, the system can sustain the loss of two chunks without the loss of data.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|lll|}
+\hline
+\textbf{Redundancy Level} & \textbf{Overhead} & \textbf{Total Chunks} \\
+\hline
+No redundancy & 1.00 & 1 \\
+\hline
+Replica 3 & 3.00 & 3 \\
+$k=2, m=2$ & 2.00 & 4 \\
+$k=4, m=2$ & 1.50 & 6 \\
+$k=8, m=2$ & 1.25 & 10 \\
+$k=20, m=2$ & 1.10 & 22 \\
+\hline
+\end{tabular}
+
+\caption[Storage Overhead of Erasure-Coding Profiles]{Storage overhead (i.e., bytes of used storage per byte of useful data stored) of various erasure coding profiles compared to baselines (no redundancy and 3-way mirrored replication). Higher represents higher overhead and therefore lower efficiency; 1.0 represents perfect efficiency.}
+\label{tbl:ec-profiles}
+\end{table}
+
+However, while erasure coding can provide significant space efficiency benefits, there are certain downsides which must be considered. For Ceph specifically, because data are split across multiple \acp{OSD} and coding chunks must be computed from the data, retrieval of an object requires communication with all \acp{OSD}, and results in additional \ac{CPU} overhead when writing due to the computation of coding chunks: this results in overhead especially for small objects. However, in certain cases, erasure-coding can result in better performance: because reads and writes are striped across multiple \acp{OSD}, performance can potentially be increased depending on the combined performance of the storage devices hosting the data chunks, so long as the storage devices are the source of the performance bottleneck.
+
+\input{2_background/b_ceph_architecture}
+
+\medskip
