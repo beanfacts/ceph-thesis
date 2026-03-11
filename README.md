@@ -26,7 +26,8 @@ When starting to work with the template, one should at first configure the docum
 
 Copyright (c) 2026 Tim Dettmar
 
-The contents of this thesis are licensed under the CC-BY-SA 4.0 license.
+The contents of this thesis are licensed under the CC-BY-SA 4.0 license.  
+Exceptions include the university and department logos which may not be reproduced outside the context of this thesis.
 
 ## Contact & Credits
 
